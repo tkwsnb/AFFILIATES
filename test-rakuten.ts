@@ -3,26 +3,41 @@
 import secrets from "./secrets.json" with { type: "json" };
 
 const RAKUTEN_APP_ID = secrets.RAKUTEN_APP_ID;
+const RAKUTEN_ACCESS_KEY = secrets.RAKUTEN_ACCESS_KEY;
 const RAKUTEN_AFFILIATE_ID = secrets.RAKUTEN_AFFILIATE_ID;
 
 async function fetchRakutenBook(isbn: string) {
-    // 楽天ブックス書籍検索APIのエンドポイント
-    const endpoint = "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404";
+    const endpoint = "https://openapi.rakuten.co.jp/services/api/BooksBook/Search/20170404";
 
     const params = new URLSearchParams({
         format: "json",
         applicationId: RAKUTEN_APP_ID,
+        accessKey: RAKUTEN_ACCESS_KEY,
         affiliateId: RAKUTEN_AFFILIATE_ID,
         isbn: isbn,
         booksGenreId: "001001", // 漫画・コミックのジャンルID
     });
 
-    console.log("楽天APIに問い合わせ中...");
+    console.log("楽天API(新システム)に全力で問い合わせ中...");
 
-    const res = await fetch(`${endpoint}?${params.toString()}`);
+    // Headersオブジェクトを使って強固にヘッダーを定義する
+    const customHeaders = new Headers();
+
+    // 楽天に登録したURL。末尾のスラッシュ「/」があるかないかで弾かれることもあるから念のため付ける
+    customHeaders.append("Referer", "https://tkwsnb.net/");
+    customHeaders.append("Origin", "https://tkwsnb.net");
+    // 無機質なアクセスだと思われないようにユーザーエージェントも偽装する
+    customHeaders.append("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+
+    const res = await fetch(`${endpoint}?${params.toString()}`, {
+        method: "GET",
+        headers: customHeaders,
+    });
 
     if (!res.ok) {
+        const errorText = await res.text();
         console.error("APIエラーが発生したよ:", res.status, res.statusText);
+        console.error("エラーの詳しい理由:", errorText);
         return;
     }
 
@@ -41,6 +56,4 @@ async function fetchRakutenBook(isbn: string) {
     }
 }
 
-// テスト実行（例：適当な人気漫画のISBN13桁を入れてみて）
-// ここでは仮にダミーのISBNを入れておくから、手元にある漫画のバーコードの数字に変えてね
 fetchRakutenBook("9784088838847");
