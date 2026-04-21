@@ -3,7 +3,7 @@
 import secrets from "./secrets.json" with { type: "json" };
 
 const RAKUTEN_APP_ID = secrets.RAKUTEN_APP_ID;
-const RAKUTEN_AFFILIATE_ID = secrets.RAKUTEN_AFFILIATES_ID;
+const RAKUTEN_AFFILIATE_ID = secrets.RAKUTEN_AFFILIATE_ID;
 
 async function fetchRakutenBook(isbn: string) {
     // 楽天ブックス書籍検索APIのエンドポイント
