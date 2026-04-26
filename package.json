@@ -1,5 +1,17 @@
 {
+  "name": "affiliates",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --hot src/server.tsx",
+    "start": "bun run src/server.tsx",
+    "refresh-cmoa": "bun run src/scripts/refresh-cmoa-newrelease.ts"
+  },
   "dependencies": {
-    "cheerio": "^1.2.0"
+    "cheerio": "^1.2.0",
+    "hono": "^4.12.14"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0"
   }
 }
